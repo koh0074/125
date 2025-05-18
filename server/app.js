@@ -6,8 +6,10 @@ const dotenv = require('dotenv');
 const path = require('path');
 
 dotenv.config();
+const { sequelize } = require('./models');
 const indexRouter = require('./routes');
 const userRouter = require('./routes/user');
+const communityRouter=require('./routes/community');
 
 const app = express();
 app.use('/api', indexRouter);  //FE에서 작성
@@ -31,6 +33,7 @@ app.use(session({
 
 app.use('/', indexRouter);
 app.use('/user', userRouter);
+app.use('/community', require('./routes/community'));
 
 app.use((req, res, next) => {
   res.status(404).send('Not Found');
