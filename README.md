@@ -1,5 +1,5 @@
 <h2>
-<img width="652" height="472" alt="Image" src="https://github.com/user-attachments/assets/d40a45d2-5171-4ed8-8c2f-199762174a72" />
+<img width="250" height="200" alt="Image" src="https://github.com/user-attachments/assets/d40a45d2-5171-4ed8-8c2f-199762174a72" />
 </h2>
 
 ### **"한번 더, 두 번째 기호, 다섯 가지 가능성! 중장년층 재취업 지원 맞춤형 커리어 플랫폼"** 
