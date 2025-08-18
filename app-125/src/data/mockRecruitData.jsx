@@ -1,0 +1,38 @@
+const mockRecruitData = [
+  {
+    job_post_id: 1,
+    company_id: 1,
+    title: '백엔드 개발자 모집',
+    job_field: '백엔드',
+    location_city: '서울',
+    employment_type: 'fullTime',
+    work_hour: '주 40시간',
+    salary_info: '연 4000만원',
+    status: 'open',
+    required_keword: 'Java, Spring, MySQL',
+    min_age: 30,
+    max_age: 50,
+    ai_match_result: '적합',
+    created_at: '2025-05-26T12:35:20.000Z',
+    deadline: '2025-06-30T23:59:59.000Z',
+  },
+  {
+    job_post_id: 2,
+    company_id: 2,
+    title: '프론트엔드 개발자 채용',
+    job_field: '프론트엔드',
+    location_city: '부산',
+    employment_type: 'contract',
+    work_hour: '주 30시간',
+    salary_info: '월 300만원',
+    status: 'open',
+    required_keword: 'React, TypeScript, CSS',
+    min_age: 25,
+    max_age: 45,
+    ai_match_result: '매우 적합',
+    created_at: '2025-05-26T12:51:33.000Z',
+    deadline: '2025-07-15T23:59:59.000Z',
+  },
+];
+
+export default mockRecruitData;
