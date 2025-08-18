@@ -82,6 +82,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
       },
+      resume_title: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
     },
     {
       tableName: "resume",

@@ -1,39 +1,3 @@
-// const express = require('express');
-// const router = express.Router();
-// const controller = require('../controllers/community.controller');
-
-// router.get('/', controller.getAllPosts);
-// router.get('/new', controller.getPostForm);
-// router.post('/new', controller.createPost);
-// router.get('/:id', controller.getPostDetail);
-// //router.get('/:id/edit', controller.getEditForm);
-// router.post('/:id/edit', controller.updatePost);
-// router.post('/:id/delete', controller.deletePost);
-
-// router.post('/:postId/comment', controller.createComment);
-
-// module.exports = router;
-
-
-// const express = require('express');
-// const router = express.Router();
-// const controller = require('../controllers/community.controller');
-
-// router.get('/', controller.getAllPosts);
-// //router.get('/new', controller.getPostForm); // 폼 API가 필요 없으면 삭제 가능
-// router.post('/new', controller.createPost);
-// router.get('/:id', controller.getPostDetail);
-
-// // 수정 폼 라우트가 없으면 404 정상
-// // router.get('/:id/edit', controller.getEditForm);
-
-// router.put('/:id', controller.updatePost);       // RESTful하게 PUT으로 수정
-// router.delete('/:id', controller.deletePost);    // RESTful하게 DELETE로 삭제
-
-// router.post('/:postId/comment', controller.createComment);
-
-// module.exports = router;
-
 const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/community.controller');
@@ -57,7 +21,7 @@ router.post('/:id/edit', controller.updatePost);
 router.get('/:id/delete', controller.deletePost);
 
 // 댓글 작성 (get, 게시글 ID 필요)
-router.post('/:postId/comments', controller.createComment);
+router.post('/:id/comments', controller.createComment);
 
 // 좋아요
 router.post('/:id/like', controller.likePost);      // 좋아요 추가

@@ -20,7 +20,7 @@ exports.getAllPosts = async (req, res) => {
       order: [['created_at', 'DESC']],
     });
 
-    res.json(posts); // JSON 응답
+    res.json(posts); 
   } catch (error) {
     res.status(500).json({ message: '게시글 조회 중 오류 발생', error });
   }
@@ -52,7 +52,9 @@ exports.createPost = async (req, res) => {
 // 게시글 상세 보기 (댓글 포함)
 exports.getPostDetail = async (req, res) => {
   try {
-    const postId = req.params.id;
+    const postId = Number(req.params.id ?? req.params.postId);
+    if (!Number.isInteger(postId)) return res.status(400).json({ message: 'Invalid id' });
+
 
     const post = await CommunityPost.findByPk(postId);
 
@@ -61,7 +63,7 @@ exports.getPostDetail = async (req, res) => {
     }
 
     const comments = await Comment.findAll({
-      where: { post_type: 'community', post_id: postId },
+      where: { post_type: 'community', community_post_id: postId },
       include: [{ model: User, attributes: ['username'] }],
       order: [['created_at', 'ASC']]
     });
@@ -135,26 +137,49 @@ exports.deletePost = async (req, res) => {
 };
 
 // 댓글 작성
+// 댓글 작성
 exports.createComment = async (req, res) => {
   try {
-    const userId = req.user?.id || req.body.user_id; // 로그인 사용자 또는 전달받은 user_id
-    const postId = req.params.postId;
+    const userId = req.user?.userId ?? req.user?.id ?? req.body.user_id;
+    const postId = Number(req.params.id ?? req.params.postId);
     const { content } = req.body;
 
+    // ✅ (추가1) 들어온 값 로그로 확인 — 왜 안 저장되는지 즉시 보임
+    console.log('[createComment]', { postId, userId, content });
+
+    // ✅ (추가2) 필수값 검증 — 문제를 4xx로 명확히 반환
+    if (!Number.isInteger(postId)) {
+      return res.status(400).json({ message: 'Invalid postId' });
+    }
+    if (!userId) {
+      return res.status(401).json({ message: '로그인이 필요합니다.(userId 없음)' });
+    }
+    if (!content || !content.trim()) {
+      return res.status(400).json({ message: '내용이 비어 있습니다.' });
+    }
+
+    // ✅ (추가3) 글 존재 여부 확인 — 잘못된 ID로 DB 오염 방지
+    const post = await CommunityPost.findByPk(postId);
+    if (!post) {
+      return res.status(404).json({ message: '게시글을 찾을 수 없습니다.' });
+    }
+
+    // 저장
     const newComment = await Comment.create({
       post_type: 'community',
-      post_id: postId,
+      community_post_id: postId,
       user_id: userId,
       content,
       created_at: new Date(),
     });
 
-    res.status(201).json(newComment);
+    return res.status(201).json(newComment);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: '댓글 작성 중 오류 발생', error });
+    console.error('[createComment] ERROR:', error);
+    return res.status(500).json({ message: '댓글 작성 중 오류 발생', detail: error.message });
   }
 };
+
 
 // 게시글 좋아요 추가
 exports.likePost = async (req, res) => {

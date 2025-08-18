@@ -64,6 +64,22 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(50),
         allowNull: true,
       },
+      age: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        get() {
+          const rawAge = this.getDataValue('age');
+          const birthdate = this.getDataValue('birthdate');
+          if (rawAge !== null) return rawAge; // 프론트에서 수정한 age 우선
+          if (!birthdate) return null;
+          const birth = new Date(birthdate);
+          const today = new Date();
+          let calculatedAge = today.getFullYear() - birth.getFullYear();
+          const m = today.getMonth() - birth.getMonth();
+          if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) calculatedAge--;
+          return calculatedAge;
+        },
+      }
     },
     {
       tableName: "User",
