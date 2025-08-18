@@ -12,7 +12,7 @@
 | 김가빈 | 강효정 | 고화현 | 박민주 | 정예나 |
 |:------:|:------:|:------:|:------:|:------:|
 | <img width="188" height="164" alt="Image" src="https://github.com/user-attachments/assets/0e5c66e4-a66f-4ea9-8b6e-5f7f3a110a4e" /> | <img width="299" height="299" alt="Image" src="https://github.com/user-attachments/assets/1e2094b5-baac-45e8-a424-2860930cff70" /> | <img width="299" height="299" alt="Image" src="https://github.com/user-attachments/assets/34da90ab-4e17-4511-8412-cb95d2f31483" /> | <img width="299" height="299" alt="Image" src="https://github.com/user-attachments/assets/c65eb861-f303-472f-bea4-21d2c58254de" /> | <img width="299" height="299" alt="Image" src="https://github.com/user-attachments/assets/23f8b98f-e017-422d-872e-597e5c541dc2" /> |
-| BE | FE | BE | FE | BE |
+| PM, BE | FE | BE | FE | BE |
 
 
 <br/>
