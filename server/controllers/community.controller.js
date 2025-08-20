@@ -1,3 +1,5 @@
+//server/controllers/community.controller.js
+
 const { CommunityPost, Comment, User, Like, Scrap } = require('../models');
 const { Op } = require('sequelize');
 
@@ -184,7 +186,7 @@ exports.createComment = async (req, res) => {
 // 게시글 좋아요 추가
 exports.likePost = async (req, res) => {
   try {
-    const userId = req.user?.id || req.body.user_id;
+    const userId = req.user?.userId || req.body.user_id;
     const postId = parseInt(req.params.id, 10);
 
     // 중복 체크
@@ -223,7 +225,7 @@ exports.likePost = async (req, res) => {
 // 게시글 좋아요 취소
 exports.unlikePost = async (req, res) => {
   try {
-    const userId = req.user?.id || req.body.user_id;
+    const userId = req.user?.userId || req.body.user_id;
     const postId = parseInt(req.params.id, 10);
 
     const deleted = await Like.destroy({
@@ -254,7 +256,7 @@ exports.unlikePost = async (req, res) => {
 
 // 커뮤니티 게시글 스크랩
 exports.scrapCommunityPost = async (req, res) => {
-  const userId = req.user?.id||1; // 로그인한 사용자 ID
+  const userId = req.user?.userId ||1; // 로그인한 사용자 ID
   const postId = req.params.postId;
 
   try {
@@ -282,7 +284,7 @@ exports.scrapCommunityPost = async (req, res) => {
 
 // 커뮤니티 게시글 스크랩 취소
 exports.unscrapCommunityPost = async (req, res) => {
-  const userId = req.user?.id||1;
+  const userId = req.user?.userId ||1;
   const postId = req.params.postId;
 
   try {
@@ -322,4 +324,3 @@ async function insertDummyPost() {
 }
 
 insertDummyPost();
-

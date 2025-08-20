@@ -132,19 +132,12 @@ module.exports = (sequelize, DataTypes) => {
     {
       job_post_id: {
         type: DataTypes.INTEGER,
+        allowNull: false,
         primaryKey: true,
-        allowNull: false,
-      },
-      company_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
+        autoIncrement: true,
       },
       title: {
         type: DataTypes.STRING(255),
-        allowNull: false,
-      },
-      job_field: {
-        type: DataTypes.STRING(50),
         allowNull: false,
       },
       location_city: {
@@ -164,26 +157,65 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       status: {
-        type: DataTypes.ENUM("read", "unread"),
-        defaultValue: "unread",
+        type: DataTypes.ENUM("open", "closed"),
+        defaultValue: "open",
       },
       required_keyword: {
         type: DataTypes.TEXT,
       },
       min_age: {
         type: DataTypes.INTEGER,
+        allowNull: true,
       },
       max_age: {
         type: DataTypes.INTEGER,
+        allowNull: true,
       },
       ai_match_result: {
         type: DataTypes.TEXT,
+        allowNull: true,
       },
       created_at: {
         type: DataTypes.DATE,
+        allowNull: true,
       },
       deadline: {
         type: DataTypes.DATE,
+        allowNull: true,
+      },
+      career: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      education: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      skills: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      preference: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      company: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      job_field: {
+        type: DataTypes.ENUM(
+          "전체",
+          "기획·경영",
+          "마케팅·영업",
+          "회계·인사·지원",
+          "IT·데이터",
+          "디자인·콘텐츠",
+          "생산·물류",
+          "교육·의료·연구",
+          "공공·금융"
+        ),
+        allowNull: true,
       },
     },
     {
