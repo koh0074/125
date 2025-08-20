@@ -38,7 +38,7 @@ const TitleGroup = styled.div`
   flex-direction: column;
 `;
 
-const ThumbnailWrapper = styled.div`  
+const ThumbnailWrapper = styled.div`
   position: relative;
   margin-bottom: 24px;
 `;
@@ -119,39 +119,45 @@ const GoSiteButton = styled.button`
 function EmploymentTrendDetail() {
   const { id } = useParams();
   const [data, setData] = useState(null);
-  const [scrapped, setScrapped] = useState(false); 
+  const [scrapped, setScrapped] = useState(false);
+  const token = localStorage.getItem("token"); // 로컬스토리지에서 토큰 가져오기
+  const userId = Number(localStorage.getItem("userId")); // userId 가져오기
+
+  console.log("token:", token);
 
   useEffect(() => {
+    // 게시글 상세 조회
     axios
-      .get(`http://127.0.0.1:3002/api/infoPosts/${id}`)
-      .then((res) => {
-        setData(res.data);
+      .get(`http://127.0.0.1:3002/api/infoPosts/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
       })
-      .catch((err) => {
-        console.error("데이터 불러오기 실패:", err);
-      });
+      .then((res) => setData(res.data))
+      .catch((err) => console.error("데이터 불러오기 실패:", err));
 
+    // 스크랩 여부 확인
     axios
-      .get("http://127.0.0.1:3002/api/mypage/scraps") // 스크랩 여부 확인
-      .then((res) => {
-        const exists = res.data.scraps?.some(
-          (scrap) =>
-            scrap.post_type === "info" && String(scrap.info_post_id) === id
-        );
-        setScrapped(exists);
+      .get("http://127.0.0.1:3002/api/mypage/scraps", {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { user_id: userId }, // ✅ query로 전달
       })
-      .catch((err) => {
-        console.error("스크랩 확인 실패:", err);
-      });
-  }, [id]);
+      .then((res) => {
+        const list = Array.isArray(res?.data?.scraps) ? res.data.scraps : [];
+        const exists = list.some((s) => s.type === "info" && Number(s.id) === Number(id));
+        setScrapped(exists); // true면 fill 아이콘 바로 보여짐
+      })
+      .catch((err) => console.error("스크랩 확인 실패:", err));
+  }, [id, token]);
 
   const toggleScrap = async () => {
     try {
       if (scrapped) {
-        await axios.delete(`http://127.0.0.1:3002/api/infoPosts/${id}/scrap`);
+        await axios.delete(`http://127.0.0.1:3002/api/infoPosts/${id}/scrap`, {
+          headers: { Authorization: `Bearer ${token}` },
+          data: { user_id: userId }, // DELETE 요청에도 body를 보내야 하면 data 사용
+        });
         setScrapped(false);
       } else {
-        await axios.post(`http://127.0.0.1:3002/api/infoPosts/${id}/scrap`);
+        await axios.post(`http://127.0.0.1:3002/api/infoPosts/${id}/scrap`, { user_id: userId }, { headers: { Authorization: `Bearer ${token}` } });
         setScrapped(true);
       }
     } catch (error) {
@@ -179,26 +185,17 @@ function EmploymentTrendDetail() {
             </ScrapIcon>
           </TopBar>
 
-          <ThumbnailWrapper>
-            {data.thumbnail ? (
-              <ImageThumbnail src={data.thumbnail} alt="썸네일 이미지" />
-            ) : (
-              <GrayBox />
-            )}
-          </ThumbnailWrapper>
+          <ThumbnailWrapper>{data.thumbnail ? <ImageThumbnail src={data.thumbnail} alt="썸네일 이미지" /> : <GrayBox />}</ThumbnailWrapper>
 
           <CategoryTag>중장년 취업</CategoryTag>
           <Summary>{data.summary}</Summary>
 
           {data.source_url && (
             <ButtonWrapper>
-              <GoSiteButton onClick={() => window.open(data.source_url, "_blank")}>
-                사이트 바로가기 →
-              </GoSiteButton>
+              <GoSiteButton onClick={() => window.open(data.source_url, "_blank")}>사이트 바로가기 →</GoSiteButton>
             </ButtonWrapper>
           )}
         </CardWrapper>
-
       </PageWrapper>
     </>
   );

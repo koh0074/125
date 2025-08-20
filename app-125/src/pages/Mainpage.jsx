@@ -8,7 +8,7 @@ import JobResearchImg from "../img/JobResearchImg.png";
 import InfoBroadImg from "../img/InfoBroadImg.png";
 import CommunityImg from "../img/CommunityImg.png";
 import Footer from "../components/Footer";
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
 
 const PageWrapper = styled.div`
   padding-top: 114px;
@@ -51,7 +51,7 @@ const ButtonGroup = styled.div`
 `;
 
 const BannerButtonPrimary = styled.button`
-  background: linear-gradient(to right, #2D66D0, #5EC27D);
+  background: linear-gradient(to right, #2d66d0, #5ec27d);
   color: white;
   border: none;
   border-radius: 30px;
@@ -66,7 +66,7 @@ const BannerButtonPrimary = styled.button`
 `;
 
 const BannerButtonSecondary = styled.button`
-  background: linear-gradient(to right, #2D66D0, #FEAD5C);
+  background: linear-gradient(to right, #2d66d0, #fead5c);
   color: white;
   border: none;
   border-radius: 30px;
@@ -106,7 +106,7 @@ const Card = styled.div`
   height: 220px;
   background: white;
   border-radius: 20px;
-  box-shadow: 0 5px 10px rgba(0,0,0,0.08);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -143,8 +143,8 @@ function MainPage() {
             <BannerTitle>125 일이요! :</BannerTitle>
             <BannerSubtitle>한 번 더, 두 번째 기회, 다섯 가지의 가능성!</BannerSubtitle>
             <ButtonGroup>
-              <BannerButtonPrimary onClick={() => navigate('/resume')}>이력서 리터칭 시작하기</BannerButtonPrimary>
-              <BannerButtonSecondary onClick={() => navigate('/recruit')}>채용 공고 바로가기</BannerButtonSecondary>
+              <BannerButtonPrimary onClick={() => navigate("/resumes")}>이력서 리터칭 시작하기</BannerButtonPrimary>
+              <BannerButtonSecondary onClick={() => navigate("/recruit")}>채용 공고 바로가기</BannerButtonSecondary>
             </ButtonGroup>
           </BannerContent>
         </Banner>
@@ -152,19 +152,19 @@ function MainPage() {
         <Section>
           <SectionTitle>서비스 바로가기</SectionTitle>
           <CardContainer>
-            <Card onClick={() => navigate('/recruit')}>
+            <Card onClick={() => navigate("/recruit")}>
               <CardImage src={JobResearchImg} alt="구인/구직 게시판" />
               <CardText>구인/구직 게시판</CardText>
             </Card>
-            <Card onClick={() => navigate('/resume')}>
+            <Card onClick={() => navigate("/resumes")}>
               <CardImage src={AIRetouchingImg} alt="AI 이력서 리터칭" />
               <CardText>AI 이력서 리터칭</CardText>
             </Card>
-            <Card onClick={() => navigate('/community')}>
+            <Card onClick={() => navigate("/community")}>
               <CardImage src={CommunityImg} alt="커뮤니티" />
               <CardText>커뮤니티</CardText>
             </Card>
-            <Card onClick={() => navigate('/infoboard/trend')}>
+            <Card onClick={() => navigate("/infoboard/trend")}>
               <CardImage src={InfoBroadImg} alt="정보게시판" />
               <CardText>정보게시판</CardText>
             </Card>

@@ -57,7 +57,7 @@ const DropdownMenu = styled.div`
   background: white;
   border: 1px solid #ddd;
   border-radius: 6px;
-  box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   z-index: 10;
@@ -111,9 +111,9 @@ const ReactionIcon = styled.button`
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: ${props => (props.$liked ? "red" : "#888")};
-  opacity: ${props => (props.$disabled ? 0.6 : 1)};
-  pointer-events: ${props => (props.$disabled ? "none" : "auto")}; /* [수정] 로딩 중 클릭 방지 */
+  color: ${(props) => (props.$liked ? "red" : "#888")};
+  opacity: ${(props) => (props.$disabled ? 0.6 : 1)};
+  pointer-events: ${(props) => (props.$disabled ? "none" : "auto")}; /* [수정] 로딩 중 클릭 방지 */
 `;
 
 const ScrapIcon = styled.button`
@@ -121,9 +121,9 @@ const ScrapIcon = styled.button`
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: ${props => (props.$scrapped ? "#f2a65a" : "#888")};
-  opacity: ${props => (props.$disabled ? 0.6 : 1)};
-  pointer-events: ${props => (props.$disabled ? "none" : "auto")}; /* [수정] 로딩 중 클릭 방지 */
+  color: ${(props) => (props.$scrapped ? "#f2a65a" : "#888")};
+  opacity: ${(props) => (props.$disabled ? 0.6 : 1)};
+  pointer-events: ${(props) => (props.$disabled ? "none" : "auto")}; /* [수정] 로딩 중 클릭 방지 */
 `;
 
 const CommentSection = styled.div`
@@ -197,6 +197,7 @@ const CommentDate = styled.div`
 
 function CommunityDetail() {
   const { id } = useParams();
+
   const navigate = useNavigate();
   const numericId = Number(id);
   const [post, setPost] = useState(null);
@@ -212,15 +213,9 @@ function CommunityDetail() {
   const [scrapPending, setScrapPending] = useState(false);
 
   // 로그인 사용자
-  const USER_ID = Number(
-    localStorage.getItem("userId") ||
-      localStorage.getItem("user_id") ||
-      1
-  );
-  const LOCAL_USERNAME =
-    localStorage.getItem("username") ||
-    localStorage.getItem("userName") ||
-    "";
+  const USER_ID = Number(localStorage.getItem("userId") || localStorage.getItem("user_id") || 1);
+  const LOCAL_USERNAME = localStorage.getItem("username") || localStorage.getItem("userName") || "";
+  const token = localStorage.getItem("token");
 
   const getMyDisplayName = async () => {
     if (LOCAL_USERNAME) return LOCAL_USERNAME;
@@ -249,17 +244,12 @@ function CommunityDetail() {
       }
     };
 
+    // 스크랩 여부 조회
     const fetchScrapStatus = async () => {
-      try {
-        const res = await axios.get("/api/mypage/scraps");
-        const list = Array.isArray(res?.data?.scraps) ? res.data.scraps : [];
-        const isScrapped = list.some(
-          (s) => s.post_type === "community" && Number(s.community_post_id) === numericId
-        );
-        setScrapped(isScrapped);
-      } catch (error) {
-        console.error("스크랩 여부 확인 실패:", error);
-      }
+      const res = await axios.get("/api/mypage/scraps", { params: { user_id: USER_ID } });
+      const list = Array.isArray(res?.data?.scraps) ? res.data.scraps : [];
+      const isScrapped = list.some((s) => s.type === "community" && Number(s.id) === Number(id));
+      setScrapped(isScrapped);
     };
 
     if (!Number.isFinite(numericId)) {
@@ -269,11 +259,10 @@ function CommunityDetail() {
 
     fetchPost();
     fetchScrapStatus();
-  }, [numericId, navigate, id]);
+  }, [numericId, navigate, USER_ID]);
 
- 
   const toggleLike = async () => {
-    if (likePending) return;          
+    if (likePending) return;
     setLikePending(true);
     try {
       if (!liked) {
@@ -283,7 +272,11 @@ function CommunityDetail() {
         setPost((prev) => (prev ? { ...prev, like_count: (prev.like_count || 0) + 1 } : prev));
       } else {
         // 좋아요 취소
-        await axios.delete(`/api/community/${numericId}/like`);
+        await axios.delete(`/api/community/${numericId}/like`, {
+          data: { user_id: USER_ID },
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
         setLiked(false);
         setPost((prev) => (prev ? { ...prev, like_count: Math.max(0, (prev.like_count || 0) - 1) } : prev));
       }
@@ -293,14 +286,18 @@ function CommunityDetail() {
 
       if (!liked && status === 400) {
         // 이미 좋아요한 게시물
-        window.alert("이미 좋아요한 게시물입니다.");       // [수정]
-        setLiked(true);                                     //강제 보정
-        setPost((prev) => (prev ? { ...prev, like_count: Math.max((prev.like_count || 0), (prev.like_count || 0) + 1) } : prev)); // [수정] 최소 +1
+        window.alert("이미 좋아요한 게시물입니다."); // [수정]
+        setLiked(true);
+        setPost((prev) =>
+          prev
+            ? { ...prev, like_count: Math.max(0, prev.like_count || 1) } // ✅ alert 후 -1 처리
+            : prev
+        );
       } else if (liked && status === 400) {
         // 좋아요가 안 된 상태에서 취소 시도
-        window.alert("이미 좋아요가 해제된 상태입니다.");   // [수정]
-        setLiked(false);                                    //강제 보정
-        setPost((prev) => (prev ? { ...prev, like_count: Math.max(0, (prev.like_count || 0)) } : prev));
+        window.alert("이미 좋아요가 해제된 상태입니다."); // [수정]
+        setLiked(false); //강제 보정
+        setPost((prev) => (prev ? { ...prev, like_count: Math.max(0, prev.like_count || 0) } : prev));
       } else {
         console.error("좋아요 요청 실패:", status, msg, error);
       }
@@ -311,32 +308,31 @@ function CommunityDetail() {
 
   //스크랩 토글(400 처리 + 보정)
   const toggleScrap = async () => {
-    if (scrapPending) return;          // 중복 클릭 방지
+    if (scrapPending) return; // 중복 클릭 방지
     setScrapPending(true);
+
     try {
       if (!scrapped) {
         // 스크랩 등록
         await axios.post(`/api/community/${numericId}/scrap`, { user_id: USER_ID });
-        setScrapped(true);
+        setScrapped(true); // ✅ 요청 성공 후 바로 상태 반영
       } else {
         // 스크랩 취소
         await axios.delete(`/api/mypage/scraps/${numericId}?type=community`);
-        setScrapped(false);
+        setScrapped(false); // ✅ 상태 바로 업데이트
       }
     } catch (error) {
       const status = error?.response?.status;
-      const msg = error?.response?.data?.message || "";
 
+      // 이미 등록/삭제된 상태일 때 보정
       if (!scrapped && status === 400) {
-        // 이미 스크랩되어 있음
-        window.alert("이미 스크랩한 게시물입니다.");        // [수정]
-        setScrapped(true);                                   // 강제 보정
+        window.alert("이미 스크랩한 게시물입니다.");
+        setScrapped(true);
       } else if (scrapped && status === 400) {
-        // 스크랩 안 된 상태에서 취소 시도
-        window.alert("이미 스크랩이 해제된 상태입니다.");    // [수정]
-        setScrapped(false);                                  // 강제 보정
+        window.alert("이미 스크랩이 해제된 상태입니다.");
+        setScrapped(false);
       } else {
-        console.error("스크랩 요청 실패:", status, msg, error);
+        console.error("스크랩 요청 실패:", status, error?.response?.data?.message);
       }
     } finally {
       setScrapPending(false);
@@ -426,27 +422,13 @@ function CommunityDetail() {
 
         <ReactionBar>
           <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-            <ReactionIcon
-              onClick={toggleLike}
-              $liked={liked}
-              $disabled={likePending}
-              aria-label="like-toggle"
-              title={liked ? "좋아요 취소" : "좋아요"}
-            >
+            <ReactionIcon onClick={toggleLike} $liked={liked} $disabled={likePending} aria-label="like-toggle" title={liked ? "좋아요 취소" : "좋아요"}>
               {liked ? <AiFillHeart /> : <AiOutlineHeart />}
             </ReactionIcon>
-            <span style={{ fontSize: "14px", color: "#666" }}>
-              {post.like_count}
-            </span>
+            <span style={{ fontSize: "14px", color: "#666" }}>{post.like_count}</span>
           </div>
 
-          <ScrapIcon
-            onClick={toggleScrap}
-            $scrapped={scrapped}
-            $disabled={scrapPending}
-            aria-label="scrap-toggle"
-            title={scrapped ? "스크랩 취소" : "스크랩"}
-          >
+          <ScrapIcon onClick={toggleScrap} $scrapped={scrapped} $disabled={scrapPending} aria-label="scrap-toggle" title={scrapped ? "스크랩 취소" : "스크랩"}>
             {scrapped ? <BsBookmarkFill /> : <BsBookmark />}
           </ScrapIcon>
         </ReactionBar>
@@ -455,38 +437,22 @@ function CommunityDetail() {
         <CommentSection>
           <h4>댓글</h4>
           {comments.map((comment) => (
-            <CommentBox
-              key={comment.comment_id || `${comment.user_id}-${comment.created_at || Math.random()}`}
-            >
+            <CommentBox key={comment.comment_id || `${comment.user_id}-${comment.created_at || Math.random()}`}>
               <CommentProfile src={profileImg} alt="profile" />
               <CommentBody>
-                <CommentAuthor>
-                  {comment?.User?.username ||
-                   comment?.user?.username ||
-                   comment?.username ||
-                   `유저 ${comment.user_id}`}
-                </CommentAuthor>
+                <CommentAuthor>{comment?.User?.username || comment?.user?.username || comment?.username || `유저 ${comment.user_id}`}</CommentAuthor>
                 <CommentText>{comment.content}</CommentText>
                 <CommentDate>{comment.created_at?.slice(0, 10)}</CommentDate>
               </CommentBody>
             </CommentBox>
           ))}
-          <CommentInput
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            placeholder="댓글을 입력하세요"
-          />
+          <CommentInput value={newComment} onChange={(e) => setNewComment(e.target.value)} placeholder="댓글을 입력하세요" />
           <SubmitButton onClick={handleCommentSubmit}>댓글 등록</SubmitButton>
         </CommentSection>
       </PageWrapper>
 
       {showDeleteModal && (
-        <DeleteConfirmModal
-          title="정말 삭제하시겠습니까?"
-          message="삭제된 게시글은 복구할 수 없습니다."
-          onClose={handleClose}
-          onConfirm={handleDelete}
-        />
+        <DeleteConfirmModal title="정말 삭제하시겠습니까?" message="삭제된 게시글은 복구할 수 없습니다." onClose={handleClose} onConfirm={handleDelete} />
       )}
     </>
   );

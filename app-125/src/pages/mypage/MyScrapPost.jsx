@@ -150,11 +150,7 @@ function MyScrapPost() {
   };
 
   const handleSelectOne = (scrap_id) => {
-    setSelectedPosts((prev) =>
-      prev.includes(scrap_id)
-        ? prev.filter((id) => id !== scrap_id)
-        : [...prev, scrap_id]
-    );
+    setSelectedPosts((prev) => (prev.includes(scrap_id) ? prev.filter((id) => id !== scrap_id) : [...prev, scrap_id]));
   };
 
   const handleDeleteSelected = () => {
@@ -181,9 +177,7 @@ function MyScrapPost() {
       <Title>스크랩한 게시물</Title>
       <ControlBar>
         <LeftActions>
-          <DeleteButton onClick={handleDeleteSelected}>
-            {selectedPosts.length > 0 ? "모두 삭제" : "선택 삭제"}
-          </DeleteButton>
+          <DeleteButton onClick={handleDeleteSelected}>{selectedPosts.length > 0 ? "모두 삭제" : "선택 삭제"}</DeleteButton>
         </LeftActions>
         <RightActions>
           <Select>
@@ -211,11 +205,7 @@ function MyScrapPost() {
           {posts.map((post) => (
             <tr key={post.scrap_id}>
               <Td>
-                <input
-                  type="checkbox"
-                  checked={selectedPosts.includes(post.scrap_id)}
-                  onChange={() => handleSelectOne(post.scrap_id)}
-                />
+                <input type="checkbox" checked={selectedPosts.includes(post.scrap_id)} onChange={() => handleSelectOne(post.scrap_id)} />
               </Td>
               <Td>{post.title}</Td>
               <Td>{post.category}</Td>
