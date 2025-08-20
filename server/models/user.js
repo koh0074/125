@@ -68,8 +68,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: true,
         get() {
-          const rawAge = this.getDataValue("age");
-          const birthdate = this.getDataValue("birthdate");
           if (rawAge !== null) return rawAge; // 프론트에서 수정한 age 우선
           if (!birthdate) return null;
           const birth = new Date(birthdate);
@@ -78,8 +76,6 @@ module.exports = (sequelize, DataTypes) => {
           const m = today.getMonth() - birth.getMonth();
           if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) calculatedAge--;
           return calculatedAge;
-        },
-      },
     },
     {
       tableName: "User",
