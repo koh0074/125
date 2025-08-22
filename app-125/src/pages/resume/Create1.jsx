@@ -230,10 +230,11 @@ function Create1({
         return;
       }
 
-      // 11자리면 하이픈 추가
+      // 11자리면 하이픈 추가 (완료 시)
       const formattedPhone = tel.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3");
       setTel(formattedPhone);
 
+      // 이메일 검사
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       const fullEmail = `${email1}@${email2}`;
       if (!emailRegex.test(fullEmail)) {
@@ -243,6 +244,10 @@ function Create1({
 
       setIsEditing(false); // 완료 상태로 변경
     } else {
+      // 편집 시작할 때 → 하이픈 제거
+      const rawPhone = tel.replace(/-/g, "");
+      setTel(rawPhone);
+
       setIsEditing(true); // 편집 상태로 변경
     }
   };
